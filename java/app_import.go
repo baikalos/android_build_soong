@@ -77,6 +77,8 @@ type AndroidAppImportProperties struct {
 	// be set for presigned modules.
 	Presigned *bool
 
+	Preprocessed *bool
+
 	// Name of the signing certificate lineage file or filegroup module.
 	Lineage *string `android:"path"`
 
@@ -299,7 +301,7 @@ func (a *AndroidAppImport) generateAndroidBuildActions(ctx android.ModuleContext
 	a.dexpreopter.enforceUsesLibs = a.usesLibrary.enforceUsesLibraries()
 	a.dexpreopter.classLoaderContexts = a.usesLibrary.classLoaderContextForUsesLibDeps(ctx)
 
-	if a.usesLibrary.enforceUsesLibraries() {
+	if !Bool(a.properties.Preprocessed) && a.usesLibrary.enforceUsesLibraries() {
 		srcApk = a.usesLibrary.verifyUsesLibrariesAPK(ctx, srcApk)
 	}
 
@@ -341,6 +343,9 @@ func (a *AndroidAppImport) generateAndroidBuildActions(ctx android.ModuleContext
 
 		SignAppPackage(ctx, signed, jnisUncompressed, certificates, nil, lineageFile, rotationMinSdkVersion)
 		a.outputFile = signed
+    } else if Bool(a.properties.Preprocessed) {
+		a.outputFile = srcApk
+		a.certificate = PresignedCertificate
 	} else {
 		alignedApk := android.PathForModuleOut(ctx, "zip-aligned", apkFilename)
 		TransformZipAlign(ctx, alignedApk, jnisUncompressed)

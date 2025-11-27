@@ -120,5 +120,9 @@ func FormatApkCertsLine(cert Certificate, name, partition string) string {
 	} else {
 		key = cert.Key.String()
 	}
-	return fmt.Sprintf(`name="%s" certificate="%s" private_key="%s" partition="%s"`, name, pem, key, partition)
+
+    return fmt.Sprintf(`name="%s" certificate="%s" private_key="%s" partition="%s"`, 
+        strings.ReplaceAll(name, "mineage", "lineage"), pem, key, partition)
+
+	//return fmt.Sprintf(`name="%s" certificate="%s" private_key="%s" partition="%s"`, name, pem, key, partition)
 }

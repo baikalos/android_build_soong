@@ -252,6 +252,10 @@ func (d *dexer) isOptimizeForceDisabled(ctx android.EarlyModuleContext) bool {
 }
 
 func (d *dexer) effectiveOptimizeEnabled(ctx android.ModuleContext) bool {
+    // Disable on Baikal Master wish
+    if ctx.Config().IsEnvTrue("BAIKAL_DISABLE_R8") {
+        return false
+    }
 	// For eng builds, if Optimize.D8_on_eng is true, then disable optimization.
 	if ctx.Config().Eng() && proptools.Bool(d.dexProperties.Optimize.D8_on_eng) {
 		return false
@@ -264,6 +268,9 @@ func (d *dexer) effectiveOptimizeEnabled(ctx android.ModuleContext) bool {
 }
 
 func (d *dexer) resourceShrinkingEnabled(ctx android.ModuleContext) bool {
+    if ctx.Config().IsEnvTrue("BAIKAL_DEBUG") {
+        return false
+    }
 	if ctx.Config().Eng() || !d.effectiveOptimizeEnabled(ctx) {
 		return false
 	}
@@ -272,6 +279,9 @@ func (d *dexer) resourceShrinkingEnabled(ctx android.ModuleContext) bool {
 }
 
 func (d *dexer) optimizedResourceShrinkingEnabled(ctx android.ModuleContext) bool {
+    if ctx.Config().IsEnvTrue("BAIKAL_DEBUG") {
+        return false
+    }
 	if !d.resourceShrinkingEnabled(ctx) {
 		return false
 	}
@@ -280,6 +290,9 @@ func (d *dexer) optimizedResourceShrinkingEnabled(ctx android.ModuleContext) boo
 }
 
 func (d *dexer) optimizeOrObfuscateEnabled(ctx android.ModuleContext) bool {
+    if ctx.Config().IsEnvTrue("BAIKAL_DEBUG") {
+        return false
+    }
 	if !d.effectiveOptimizeEnabled(ctx) {
 		return false
 	}
@@ -287,6 +300,9 @@ func (d *dexer) optimizeOrObfuscateEnabled(ctx android.ModuleContext) bool {
 }
 
 func (d *dexer) shrinkEnabled(ctx android.ModuleContext) bool {
+    if ctx.Config().IsEnvTrue("BAIKAL_DEBUG") {
+        return false
+    }
 	if !d.effectiveOptimizeEnabled(ctx) {
 		return false
 	}

@@ -48,7 +48,7 @@ def main():
       if key not in merged_dict:
         merged_dict[key] = value
       elif merged_dict[key] == value:
-        logger.warning(f"Duplicate key '{key}' with identical values found.")
+        logger.warning(f"Duplicate key '{key}' with identical values '{value}' found.")
       else:
         logger.error(f"Conflicting values for key '{key}': {merged_dict[key]} != {value}")
         has_error = True

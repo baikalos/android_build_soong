@@ -18,6 +18,7 @@ package java
 // override_runtime_resource_overlay.
 
 import (
+	"strings"
 	"android/soong/android"
 
 	"github.com/google/blueprint"
@@ -188,7 +189,14 @@ func (r *RuntimeResourceOverlay) GenerateAndroidBuildActions(ctx android.ModuleC
 	// Sign the built package
 	_, _, certificates := collectAppDeps(ctx, r, false, false)
 	r.certificate, certificates = processMainCert(r.ModuleBase, r.properties.Certificate.GetOrDefault(ctx, ""), certificates, ctx)
-	signed := android.PathForModuleOut(ctx, "signed", r.Name()+".apk")
+
+    fileName := r.Name()
+    if( strings.Contains(fileName,"lineage") ) {
+        fileName = strings.ReplaceAll(fileName, "lineage", "mineage")
+    }
+
+	signed := android.PathForModuleOut(ctx, "signed", fileName+".apk")
+
 	var lineageFile android.Path
 	if lineage := String(r.properties.Lineage); lineage != "" {
 		lineageFile = android.PathForModuleSrc(ctx, lineage)
@@ -426,7 +434,13 @@ func (a *AutogenRuntimeResourceOverlay) GenerateAndroidBuildActions(ctx android.
 	// Sign the built package
 	var certificates []Certificate
 	a.certificate, certificates = processMainCert(a.ModuleBase, "", nil, ctx)
-	signed := android.PathForModuleOut(ctx, "signed", a.Name()+".apk")
+
+    fileName := a.Name()
+    if( strings.Contains(fileName,"lineage") ) {
+        fileName = strings.ReplaceAll(fileName, "lineage", "mineage")
+    }
+
+	signed := android.PathForModuleOut(ctx, "signed", fileName+".apk")
 	SignAppPackage(ctx, signed, a.exportPackage, certificates, nil, nil, "")
 	a.outputFile = signed
 
